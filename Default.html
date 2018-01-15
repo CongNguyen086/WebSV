@@ -186,6 +186,33 @@
 		  $("#introdate").val(product.IntroductionDate);
 		  $("#url").val(product.Url);
 		}
+		function updateClick() {
+		  // Build product object from inputs
+		  Product = new Object();
+		  Product.ProductName = $("#productname").val();
+		  Product.IntroductionDate =
+			  $("#introdate").val();
+		  Product.Url = $("#url").val();
+		  if ($("#updateButton").text().trim() ==
+					"Add") {
+			productAdd(Product);
+		  }
+		}
+		function productAdd(product) {
+		  productAddSuccess(product);
+		}
+		function productAddSuccess(product) {
+		  productAddRow(product);
+		  formClear();
+		}
+		function formClear() {
+		  $("#productname").val("");
+		  $("#introdate").val("");
+		  $("#url").val("");
+		}
+		function addClick() {
+		  formClear();
+		}		
 	</script>
 </body>
 </html>
