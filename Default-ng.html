@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>CRUD Example</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container" ng-app="myApp" ng-controller="myCtrl">
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>Paul's Training Company</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <table id="productTable"
+                       class="table table-bordered
+					 table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Introduction Date</th>
+                            <th>URL</th>
+                            <th>Edit</th>
+                        </tr>
+                        <tr ng-show = "loading" id="loading">
+                            <td colspan="100%" align="center"><img src="loading.gif"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in products">
+                            <td>{{x.ProductName}}</td>
+                            <td>{{x.IntroductionDate}}</td>
+                            <td>{{x.Url}}</td>
+                            <td>
+                                <button type='button' onclick='productGet(this);'
+                                        class='btn btn-default'
+                                        data-id=' + x.ProductId + '>
+                                    <span class='glyphicon glyphicon-edit' />
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <button type="button" id="addButton"
+                        class="btn btn-primary"
+                        onclick="addClick();">
+                    Add Product
+                </button>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Product Information
+                    </div>
+                    <div class="panel-body">
+                        <input type="hidden" id="productid" value="0" />
+                        <div class="form-group">
+                            <label for="productname">Product Name</label>
+                            <input type="text" id="productname"
+                                   class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="introdate">
+                                Introduction Date
+                            </label>
+                            <input type="date" id="introdate"
+                                   class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="url">URL</label>
+                            <input type="url" id="url"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" id="updateButton"
+                                        class="btn btn-primary"
+                                        onclick="updateClick();">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($scope, $http) {
+			$scope.loading = true;
+            $http.get("products.json").then(function (response) {
+                $scope.products = response.data;
+				$scope.loading = false;
+            });
+        });
+    </script>
+</body>
+</html>
