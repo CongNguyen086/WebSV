@@ -146,7 +146,9 @@
 				}
 				else {
 				    // Updating product
-
+				    var index = $scope.products.findIndex(item => item.ProductId == id);
+				    $scope.products[index] = $scope.product;
+				    $scope.formClear();
 				    //var data = {
 				    //		ProductName: $scope.product.ProductName,
 				    //		IntroductionDate: $scope.product.IntroductionDate,
@@ -155,9 +157,6 @@
 				    //	$http.put("product_" + id + ".json", data).then(function(response) {
 				    //		$scope.ServerResponse = data;
 				    //	});
-				    var index = $scope.products.findIndex(item => item.ProductId == id);
-				    $scope.products[index] = $scope.product;
-				    $scope.formClear();
 				}
 			};
 			
