@@ -15,7 +15,14 @@ namespace ApiTutorial.Controllers
             IHttpActionResult ret = null;
             List<Product> list = new List<Product>();
             list = CreateMockData();
-            ret = Ok(list);
+            if (list.Count > 0)
+            {
+                ret = Ok(list);
+            }
+            else
+            {
+                ret = NotFound();
+            }
             return ret;
         }
         private List<Product> CreateMockData()
