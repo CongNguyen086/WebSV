@@ -115,7 +115,7 @@
 			$scope.add = "Add";
 			$scope.loading = true;
 			// Loading data table
-            $http.get("products.json").then(function (response) {
+			$http.get("api/Product").then(function (response) {
                 $scope.products = response.data;
 				$scope.loading = false;
 				$scope.formClear();
@@ -145,25 +145,26 @@
 					$scope.formClear();
 				}
 				else {
-				// Updating product
-				
-				//var data = {
-				//		ProductName: $scope.product.ProductName,
-				//		IntroductionDate: $scope.product.IntroductionDate,
-				//		Url: $scope.product.Url
-				//	};
-				//	$http.put("product_" + id + ".json", data).then(function(response) {
-				//		$scope.ServerResponse = data;
-				//	});
-					var index = $scope.products.findIndex(item => item.ProductId == id);
-					$scope.products[index] = $scope.product;
-					$scope.formClear();
+				    // Updating product
+
+				    //var data = {
+				    //		ProductName: $scope.product.ProductName,
+				    //		IntroductionDate: $scope.product.IntroductionDate,
+				    //		Url: $scope.product.Url
+				    //	};
+				    //	$http.put("product_" + id + ".json", data).then(function(response) {
+				    //		$scope.ServerResponse = data;
+				    //	});
+				    var index = $scope.products.findIndex(item => item.ProductId == id);
+				    $scope.products[index] = $scope.product;
+				    $scope.formClear();
 				}
 			};
 			
-			$scope.productDelete = function(id) {
-				var index = $scope.products.findIndex(item => item.ProductId == id);
-				$scope.products.splice(index, 1);
+            //Delete product
+			$scope.productDelete = function (id) {
+			    var index = $scope.products.findIndex(item => item.ProductId == id);
+			    $scope.products.splice(index, 1);
 			};
         });
     </script>
