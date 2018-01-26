@@ -37,7 +37,7 @@
                     <tbody>
                         <tr ng-repeat="x in products">
                             <td>{{x.ProductName}}</td>
-                            <td>{{x.IntroductionDate | date:'yyyy-MM-dd'}}</td>
+                            <td>{{x.IntroductionDate | date:'dd/MM/yyyy'}}</td>
                             <td>{{x.Url}}</td>
                             <td>
                                 <button type='button' ng-click='productGet(x.ProductId);'
@@ -123,7 +123,7 @@
 			
 			// Binding data to controllers
 			$scope.productGet = function(id) {
-				$http.get("product_" + id + ".json").then(function(response) {
+				$http.get("api/Product/" + id).then(function(response) {
 					$scope.product = response.data;
 					$scope.product.IntroductionDate = new Date(response.data.IntroductionDate); //Convert String to Date data type
 				});

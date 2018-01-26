@@ -47,5 +47,27 @@ namespace ApiTutorial.Controllers
 
             return ret;
         }
+
+        //Get Sigle Product
+        [HttpGet()]
+        public IHttpActionResult Get(int id)
+        {
+            IHttpActionResult ret;
+            List<Product> list = new List<Product>();
+            Product prod = new Product();
+
+            list = CreateMockData();
+            prod = list.Find(p => p.ProductId == id);
+            if (prod == null)
+            {
+                ret = NotFound();
+            }
+            else
+            {
+                ret = Ok(prod);
+            }
+
+            return ret;
+        }
     }
 }
