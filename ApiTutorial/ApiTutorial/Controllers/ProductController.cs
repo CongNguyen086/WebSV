@@ -5,11 +5,14 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using ApiTutorial.Models;
+
+using System.Data.Entity;
 namespace ApiTutorial.Controllers
 {
     public class ProductController : ApiController
     {
         private ProductContext db = new ProductContext();
+        // Get all product
         [HttpGet()]
         public IHttpActionResult Get()
         {
@@ -26,45 +29,16 @@ namespace ApiTutorial.Controllers
             }
             return ret;
         }
-        private List<Product> CreateMockData()
-        {
-            List<Product> ret = new List<Product>();
-            ret.Add(new Product()
-            {
-                ProductId = 1,
-                ProductName = "Extending Bootstrap with CSS, JavaScript and jQuery",
-                IntroductionDate = Convert.ToDateTime("11/6/2015"),
-                Url = "http://bit.ly/1SNzc0i"
-            });
-
-            ret.Add(new Product()
-            {
-                ProductId = 2,
-                ProductName = "Build your own Bootstrap Business Application Template in MVC",
-                IntroductionDate = Convert.ToDateTime("29/01/2015"),
-                Url = "http://bit.ly/1I8ZqZg"
-            });
-
-            ret.Add(new Product()
-            {
-                ProductId = 3,
-                ProductName = "Building Mobile Web Sites Using,Web Forms, Bootstrap, and HTML5",
-                IntroductionDate = Convert.ToDateTime("28/8/2014"),
-                Url = "http://bit.ly/1J2dcrj"
-            });
-
-            return ret;
-        }
 
         // Get Sigle Product
         [HttpGet()]
         public IHttpActionResult Get(int id)
         {
             IHttpActionResult ret;
-            List<Product> list = new List<Product>();
             Product prod = new Product();
-
+            //List<Product> list = new List<Product>();
             // list = db.Products.ToList();
+
             prod = db.Products.Where(p => p.ProductId == id).First();
             if (prod == null)
             {
@@ -76,6 +50,74 @@ namespace ApiTutorial.Controllers
             }
 
             return ret;
+        }
+
+        // Add new product
+        [HttpPost()]
+        public IHttpActionResult Post(Product product)
+        {
+            IHttpActionResult ret = null;
+
+            product = db.Products.Add(product);
+            db.SaveChanges();
+
+            if (product != null)
+            {
+                ret = Created<Product>(Request.RequestUri +
+                     product.ProductId.ToString(), product);
+            }
+            else
+            {
+                ret = NotFound();
+            }
+            return ret;
+        }
+
+        // Update product
+        [HttpPut()]
+        public IHttpActionResult Put(int id, Product product)
+        {
+            IHttpActionResult ret = null;
+
+            db.Entry(product).State = EntityState.Modified;
+            db.SaveChanges();
+
+            if (product != null)
+            {
+                ret = Ok(product);
+            }
+            else
+            {
+                ret = NotFound();
+            }
+            return ret;
+        }
+
+        // Delete product
+        [HttpDelete()]
+        public IHttpActionResult Delete(int id)
+        {
+            IHttpActionResult ret = null;
+            Product product = new Product();
+
+            product = db.Products.Where(p => p.ProductId == id).First();
+            db.Products.Remove(product);
+            db.SaveChanges();
+
+            if (product != null)
+            {
+                ret = Ok(true);
+            }
+            else
+            {
+                ret = NotFound();
+            }
+            return ret;
+        }
+
+        public virtual void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

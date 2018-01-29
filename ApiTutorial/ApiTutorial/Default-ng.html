@@ -140,15 +140,20 @@
 			
 			$scope.updateClick = function(id) {
 				if (id == 0) {
-				// Adding product
-					$scope.products.push($scope.product);
-					$scope.formClear();
+				    // Adding product
+				    $http.post("api/Product", $scope.product).then(function (response) {
+				        $scope.products.push($scope.product);
+				        $scope.formClear();
+				    });
 				}
 				else {
 				    // Updating product
-				    var index = $scope.products.findIndex(item => item.ProductId == id);
-				    $scope.products[index] = $scope.product;
-				    $scope.formClear();
+				    $http.put("api/Product/" + id, $scope.product).then(function (response) {
+				        var index = $scope.products.findIndex(item => item.ProductId == id);
+				        $scope.products[index] = $scope.product;
+				        $scope.formClear();
+				    });
+				    
 				    //var data = {
 				    //		ProductName: $scope.product.ProductName,
 				    //		IntroductionDate: $scope.product.IntroductionDate,
@@ -162,8 +167,10 @@
 			
             //Delete product
 			$scope.productDelete = function (id) {
-			    var index = $scope.products.findIndex(item => item.ProductId == id);
-			    $scope.products.splice(index, 1);
+			    $http.delete("api/Product/" + id).then(function (response) {
+			        var index = $scope.products.findIndex(item => item.ProductId == id);
+			        $scope.products.splice(index, 1);
+			    });
 			};
         });
     </script>
