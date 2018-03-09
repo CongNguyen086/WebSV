@@ -9,6 +9,26 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/select/1.2.5/js/dataTables.select.min.js"></script>
+
+    <script type="text/javascript" charset="utf8" src="https://editor.datatables.net/extensions/Editor/js/dataTables.editor.min.js"></script>
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script type="text/javascript">
+
+    
+    </script>
 </head>
 <body>
     <div class="container" ng-app="myApp" ng-controller="myCtrl">
@@ -23,15 +43,16 @@
                        class="table table-bordered
 					 table-condensed table-striped">
                     <thead>
+                        <tr ng-show="loading" id="loading">
+                            <td colspan="100%" align="center"><img src="loading.gif"></td>
+                        </tr>
                         <tr>
                             <th>Product Name</th>
                             <th>Introduction Date</th>
                             <th>URL</th>
+                            <th>Amount</th>
                             <th>Edit</th>
 							<th>Delete</th>
-                        </tr>
-                        <tr ng-show = "loading" id="loading">
-                            <td colspan="100%" align="center"><img src="loading.gif"></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,6 +60,7 @@
                             <td>{{x.ProductName}}</td>
                             <td>{{x.IntroductionDate | date:'dd/MM/yyyy'}}</td>
                             <td>{{x.Url}}</td>
+                            <td>{{x.Amount}}</td>
                             <td>
                                 <button type='button' ng-click='productGet(x.ProductId);'
                                         class='btn btn-default'
@@ -58,6 +80,9 @@
             </div>
         </div>
         <div class="row">
+            <div id="chartContainer" style="height: 500px; width: 100%;"></div>
+        </div>
+        <div class="row">
             <div class="col-sm-6">
                 <button type="button" id="addButton"
                         class="btn btn-primary"
@@ -74,7 +99,7 @@
                         Product Information
                     </div>
                     <div class="panel-body">
-                        <input type="text" id="productid" ng-model="product.ProductId"/>
+                        <input type="hidden" id="productid" ng-model="product.ProductId"/>
                         <div class="form-group">
                             <label for="productname">Product Name</label>
                             <input type="text" id="productname"
@@ -111,16 +136,52 @@
 
     <script>
         var app = angular.module("myApp", []);
-        app.controller("myCtrl", function ($scope, $http) {
+        app.controller("myCtrl", function ($scope, $http, $timeout) {
 			$scope.add = "Add";
 			$scope.loading = true;
 			// Loading data table
 			$http.get("api/Product").then(function (response) {
-                $scope.products = response.data;
-				$scope.loading = false;
+			    $scope.products = response.data;
+			    $scope.refreshTable();
+			    $scope.loading = false;  
+			    
+			    var option = {
+			        title: {
+			            text: "This is chart of boss"
+			        },
+			        axisX: { labelAngle: 0 },
+			        //showInLegend: true,
+			        data: [
+                    {
+                        // Change type to "doughnut", "line", "splineArea", etc.
+                        type: "column",
+                        dataPoints: [],
+                    }
+			        ]
+			    };
+			    $.each(response.data, function(index, value) {
+			        option.data[0].dataPoints.push({
+			            label: value.ProductName,
+			            y: value.Amount
+			        });
+			    });
+			    chart = new CanvasJS.Chart("chartContainer", option);
+			    chart.render();
+
 				$scope.formClear();
+
             });
 			
+			$scope.refreshTable = function () {
+			    $('#productTable').DataTable().destroy();
+			    $timeout(function () {
+			        $('#productTable').DataTable({
+			            select: true,
+			            lengthMenu: [[10, 20, 30, 50], [10, 25, 50, "All"]],
+			        });
+			    });
+			};
+
 			// Binding data to controllers
 			$scope.productGet = function(id) {
 				$http.get("api/Product/" + id).then(function(response) {
@@ -142,8 +203,9 @@
 				if (id == 0) {
 				    // Adding product
 				    $http.post("api/Product", $scope.product).then(function (response) {
-				        $scope.products.push($scope.product);
+				        $scope.products.push(response.data);
 				        $scope.formClear();
+				        $scope.refreshTable();
 				    });
 				}
 				else {
@@ -152,6 +214,7 @@
 				        var index = $scope.products.findIndex(item => item.ProductId == id);
 				        $scope.products[index] = $scope.product;
 				        $scope.formClear();
+				        $scope.refreshTable();
 				    });
 				    
 				    //var data = {
@@ -170,6 +233,7 @@
 			    $http.delete("api/Product/" + id).then(function (response) {
 			        var index = $scope.products.findIndex(item => item.ProductId == id);
 			        $scope.products.splice(index, 1);
+			        $scope.refreshTable();
 			    });
 			};
         });

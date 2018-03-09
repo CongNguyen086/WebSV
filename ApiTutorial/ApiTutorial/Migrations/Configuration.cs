@@ -10,7 +10,7 @@ namespace ApiTutorial.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(ApiTutorial.Models.ProductContext context)
